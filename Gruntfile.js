@@ -8,7 +8,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-karma');
 	grunt.loadNpmTasks('grunt-karma-coveralls');
 	grunt.loadNpmTasks('grunt-conventional-changelog');
-	
+  grunt.loadNpmTasks('grunt-contrib-watch');
 	// Default task.
 	grunt.registerTask('default', ['uglify', 'test']);
 	grunt.registerTask('test', ['clean', 'jshint', 'karma', 'coverage']);
@@ -78,6 +78,22 @@ module.exports = function (grunt) {
 					'dist/textAngular-sanitize.min.js': ['src/textAngular-sanitize.js']
 				}
 			}
-		}
+		},
+		cssmin: {
+			compress_css: {
+				files: {
+					'dist/textAngular.min.css': ['src/textAngular.css']
+				}
+			}
+		},
+    watch: {
+      scripts: {
+        files: ['src/*.js', 'src/*.css'],
+        tasks: ['uglify', 'cssmin'],
+        options: {
+          spawn: false
+        }
+      }
+    }
 	});
 };
