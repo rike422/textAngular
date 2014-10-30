@@ -1961,13 +1961,17 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					},
 					// this is a suite of functions the editor should use to update all it's linked toolbars
 					editorFunctions: {
-						disable: function() {
+						disable: function(){
 							// disable all linked toolbars
-							angular.forEach(_toolbars, function(toolbarScope){ toolbarScope.disabled = true; });
+							angular.forEach(_toolbars, function(toolbarScope){
+								toolbarScope.disabled = true;
+							});
 						},
 						enable: function(){
 							// enable all linked toolbars
-							angular.forEach(_toolbars, function(toolbarScope){ toolbarScope.disabled = false; });
+							angular.forEach(_toolbars, function(toolbarScope){
+								toolbarScope.disabled = false;
+							});
 						},
 						focus: function(){
 							// this should be called when the editor is focussed
