@@ -9,7 +9,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 
 (function(){ // encapsulate all variables so they don't become global vars
 	"Use Strict";
-										
+
 	// IE version detection - http://stackoverflow.com/questions/4169160/javascript-ie-detection-why-not-use-simple-conditional-comments
 	// We need this as IE sometimes plays funny tricks with the contenteditable.
 	// ----------------------------------------------------------
@@ -44,7 +44,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 	}());
 	// detect webkit
 	var webkit = /AppleWebKit\/([\d.]+)/.test(navigator.userAgent);
-	
+
 	// fix a webkit bug, see: https://gist.github.com/shimondoodkin/1081133
 	// this is set true when a blur occurs as the blur of the ta-bind triggers before the click
 	var globalContentEditableBlur = false;
@@ -67,20 +67,20 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						curelement.select(); // use select to place cursor for input elements.
 					}
 				}
-			}	
+			}
 			globalContentEditableBlur = false;
 		}, false); // add global click handler
 		angular.element(document).ready(function () {
 			angular.element(document.body).append(angular.element('<input id="textAngular-editableFix-010203040506070809" style="width:1px;height:1px;border:none;margin:0;padding:0;position:absolute; top: -10000px; left: -10000px;" unselectable="on" tabIndex="-1">'));
 		});
 	}
-	
+
 	// Gloabl to textAngular REGEXP vars for block and list elements.
-	
+
 	var BLOCKELEMENTS = /^(address|article|aside|audio|blockquote|canvas|dd|div|dl|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|noscript|ol|output|p|pre|section|table|tfoot|ul|video)$/ig;
 	var LISTELEMENTS = /^(ul|li|ol)$/ig;
 	var VALIDELEMENTS = /^(address|article|aside|audio|blockquote|canvas|dd|div|dl|fieldset|figcaption|figure|footer|form|h1|h2|h3|h4|h5|h6|header|hgroup|hr|noscript|ol|output|p|pre|section|table|tfoot|ul|video|li)$/ig;
-	
+
 	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim#Compatibility
 	/* istanbul ignore next: trim shim for older browsers */
 	if (!String.prototype.trim) {
@@ -127,10 +127,10 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 				var style = document.createElement("style");
 				/* istanbul ignore else : WebKit hack :( */
 				if(/AppleWebKit\/([\d.]+)/.exec(navigator.userAgent)) style.appendChild(document.createTextNode(""));
-	
+
 				// Add the <style> element to the page, add as first so the styles can be overridden by custom stylesheets
 				document.head.appendChild(style);
-	
+
 				return style.sheet;
 			})();
 		}
@@ -248,7 +248,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 		// clear taTools variable. Just catches testing and any other time that this config may run multiple times...
 		angular.forEach(taTools, function(value, key){ delete taTools[key];	});
 	}]);
-	
+
 	textAngular.run([function(){
 		/* istanbul ignore next: not sure how to test this */
 		// Require Rangy and rangy savedSelection module.
@@ -261,7 +261,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 		}
 	}]);
-	
+
 	textAngular.directive("textAngular", [
 		'$compile', '$timeout', 'taOptions', 'taSelection', 'taExecCommand', 'textAngularManager', '$window', '$document', '$animate', '$log', '$q',
 		function($compile, $timeout, taOptions, taSelection, taExecCommand, textAngularManager, $window, $document, $animate, $log, $q){
@@ -495,12 +495,12 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					});
 					scope.displayElements.scrollWindow.attr({'ng-hide': 'showHtml'});
 					if(attrs.taDefaultWrap) scope.displayElements.text.attr('ta-default-wrap', attrs.taDefaultWrap);
-					
+
 					if(attrs.taUnsafeSanitizer){
 						scope.displayElements.text.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
 						scope.displayElements.html.attr('ta-unsafe-sanitizer', attrs.taUnsafeSanitizer);
 					}
-					
+
 					// add the main elements to the origional element
 					scope.displayElements.scrollWindow.append(scope.displayElements.text);
 					element.append(scope.displayElements.scrollWindow);
@@ -735,6 +735,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					};
 					// start updating on keydown
 					_keydown = function(){
+
 						/* istanbul ignore else: don't run if already running */
 						if(!scope._bUpdateSelectedStyles){
 							scope._bUpdateSelectedStyles = true;
@@ -1017,7 +1018,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 				var _lastKey;
 				var BLOCKED_KEYS = /^(9|19|20|27|33|34|35|36|37|38|39|40|45|112|113|114|115|116|117|118|119|120|121|122|123|144|145)$/;
 				var UNDO_TRIGGER_KEYS = /^(8|13|32|46|59|61|107|109|186|187|188|189|190|191|192|219|220|221|222)$/; // spaces, enter, delete, backspace, all punctuation
-				
+
 				// defaults to the paragraph element, but we need the line-break or it doesn't allow you to type into the empty element
 				// non IE is '<p><br/></p>', ie is '<p></p>' as for once IE gets it correct...
 				var _defaultVal, _defaultTest, _trimTest;
@@ -1041,11 +1042,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							'<' + attrs.taDefaultWrap + '>&nbsp;</' + attrs.taDefaultWrap + '>';
 					_trimTest = new RegExp('^<' + attrs.taDefaultWrap + '>(\\s|&nbsp;)*<\\/' + attrs.taDefaultWrap + '>$', 'ig');
 				}
-				
+
 				element.addClass('ta-bind');
-				
+
 				var _undoKeyupTimeout;
-				
+
 				scope['$undoManager' + (attrs.id || '')] = ngModel.$undoManager = {
 					_stack: [],
 					_index: 0,
@@ -1079,7 +1080,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						return this._stack[this._index];
 					}
 				};
-				
+
 				var _undo = scope['$undoTaBind' + (attrs.id || '')] = function(){
 					/* istanbul ignore else: can't really test it due to all changes being ignored as well in readonly */
 					if(!_isReadonly && _isContentEditable){
@@ -1093,7 +1094,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						}
 					}
 				};
-				
+
 				var _redo = scope['$redoTaBind' + (attrs.id || '')] = function(){
 					/* istanbul ignore else: can't really test it due to all changes being ignored as well in readonly */
 					if(!_isReadonly && _isContentEditable){
@@ -1107,14 +1108,14 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						}
 					}
 				};
-				
+
 				// in here we are undoing the converts used elsewhere to prevent the < > and & being displayed when they shouldn't in the code.
 				var _compileHtml = function(){
 					if(_isContentEditable) return element[0].innerHTML;
 					if(_isInputFriendly) return element.val();
 					throw ('textAngular Error: attempting to update non-editable taBind');
 				};
-				
+
 				var _setViewValue = function(val, triggerUndo){
 					if(typeof triggerUndo === "undefined" || triggerUndo === null) triggerUndo = true && _isContentEditable; // if not contentEditable then the native undo/redo is fine
 					if(!val) val = _compileHtml();
@@ -1129,12 +1130,12 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						}
 					}
 				};
-				
+
 				//used for updating when inserting wrapped elements
 				scope['updateTaBind' + (attrs.id || '')] = function(){
 					if(!_isReadonly) _setViewValue();
 				};
-				
+
 				//this code is used to update the models when data is entered/deleted
 				if(_isInputFriendly){
 					if(!_isContentEditable){
@@ -1159,11 +1160,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								setTimeout(that.callself,20);
 							}
 						};
-						
+
 						var processpaste = function(savedcontent, _savedSelection) {
 							text = element[0].innerHTML;
 							element[0].innerHTML = savedcontent;
-							
+
 							// restore selection
 							$window.rangy.restoreSelection(_savedSelection);
 							/* istanbul ignore else: don't care if nothing pasted */
@@ -1184,7 +1185,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 										if(!dom[0].childNodes[i] || dom[0].childNodes[i].nodeName === "#text" || dom[0].childNodes[i].tagName.toLowerCase() !== "p") continue;
 										var el = angular.element(dom[0].childNodes[i]);
 										var _listMatch = (el.attr('class') || '').match(/MsoList(Bullet|Number|Paragraph)(CxSp(First|Middle|Last)|)/i);
-										
+
 										if(_listMatch){
 											if(el[0].childNodes.length < 2 || el[0].childNodes[1].childNodes.length < 1){
 												el.remove();
@@ -1193,7 +1194,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 											var isUl = _listMatch[1].toLowerCase() === "bullet" || (_listMatch[1].toLowerCase() !== "bullet" && !(el[0].childNodes[1].innerHTML.match(/^[0-9a-z]/ig) || el[0].childNodes[1].childNodes[0].innerHTML.match(/^[0-9a-z]/ig)));
 											var _indentMatch = (el.attr('style') || '').match(/margin-left:([\-\.0-9]*)pt/i);
 											var indent = parseFloat((_indentMatch)?_indentMatch[1]:0);
-											
+
 											if (!_listMatch[3] || _listMatch[3].toLowerCase() === "first" || (_list.lastIndent === null) || (_list.isUl !== isUl && _list.lastIndent === indent)) {
 												_list.isUl = isUl;
 												_list.element = angular.element(isUl ? "<ul>" : "<ol>");
@@ -1212,7 +1213,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 													el.after(_list.element);
 												}
 											}
-											
+
 											_list.lastIndent = indent;
 											_list.lastLi = angular.element("<li>");
 											_list.element.append(_list.lastLi);
@@ -1225,7 +1226,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 										for(var _n = node[0].childNodes.length - 1; _n >= 0; _n--) node.after(node[0].childNodes[_n]);
 										node.remove();
 									};
-									
+
 									angular.forEach(dom.find('span'), function(node){
 										node.removeAttribute('lang');
 										if(node.attributes.length <= 0) _unwrapElement(node);
@@ -1233,7 +1234,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 									angular.forEach(dom.find('font'), _unwrapElement);
 									text = dom.html();
 								}
-								
+
 								text = taSanitize(text, '', _disableSanitizer);
 								taSelection.insertHtml(text);
 								$timeout(function(){
@@ -1241,7 +1242,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								}, 0);
 							}
 						};
-						
+
 						element.on('paste', function(e, eventData){
 							/* istanbul ignore else: this is for catching the jqLite testing*/
 							if(eventData) angular.extend(e, eventData);
@@ -1252,7 +1253,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								e.preventDefault();
 								return false;
 							}
-							
+
 							var savedcontent = element[0].innerHTML;
 							var clipboardData = (e.originalEvent || e).clipboardData;
 							if (clipboardData && clipboardData.getData) {// Webkit - get data from clipboard, put into editdiv, cleanup, then cancel event
@@ -1285,7 +1286,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							}, 0);
 							else e.preventDefault();
 						});
-						
+
 						element.on('keydown', function(event, eventData){
 							/* istanbul ignore else: this is for catching the jqLite testing*/
 							if(eventData) angular.extend(event, eventData);
@@ -1304,7 +1305,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								}
 							}
 						});
-						
+
 						element.on('keyup', function(event, eventData){
 							/* istanbul ignore else: this is for catching the jqLite testing*/
 							if(eventData) angular.extend(event, eventData);
@@ -1361,22 +1362,22 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							_focussed = true;
 							ngModel.$render();
 						});
-						
+
 						// prevent propagation on mousedown in editor, see #206
 						element.on('mousedown', function(event, eventData){
 							/* istanbul ignore else: this is for catching the jqLite testing*/
 							if(eventData) angular.extend(event, eventData);
-							event.stopPropagation(); 
+							event.stopPropagation();
 						});
 					}
 				}
-				
+
 				// catch DOM XSS via taSanitize
 				// Sanitizing both ways is identical
 				var _sanitize = function(unsafe){
 					return (ngModel.$oldViewValue = taSanitize(taFixChrome(unsafe), ngModel.$oldViewValue, _disableSanitizer));
 				};
-				
+
 				// trigger the validation calls
 				var _validity = function(value){
 					if(attrs.required) ngModel.$setValidity('required', !(!value || value.trim() === _defaultTest || value.trim().match(_trimTest) || value.trim() === ''));
@@ -1426,11 +1427,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								.on('click', selectorClickHandler);
 						});
 				};
-				
+
 				var _setInnerHTML = function(newval){
 					element[0].innerHTML = newval;
 				};
-				
+
 				// changes to the model variable from outside the html/text inputs
 				ngModel.$render = function(){
 					// catch model being null or undefined
@@ -1476,7 +1477,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						}
 					}
 				};
-				
+
 				if(attrs.taReadonly){
 					//set initial value
 					_isReadonly = scope.$eval(attrs.taReadonly);
@@ -1691,7 +1692,30 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 			return safe;
 		};
-	}]).directive('textAngularToolbar', [
+	}]).directive("taHooks", [
+		'textAngularManager',
+		function(textAngularManager){
+			return {
+				restrict: 'EA',
+				scope: {
+					name: '@',
+					focus: '=',
+					focusOut: '='
+				},
+				link: function(scope, element, attrs){
+					var name = scope.name;
+					var focus = scope.focus;
+					var focusOut = scope.focusOut;
+					if(angular.isFunction(focus)){
+						textAngularManager.registerEvents(name, "focus", focus);
+					}
+					if(angular.isFunction(focus)){
+						textAngularManager.registerEvents(name, "focusOut", focusOut);
+					}
+				}
+			};
+		}
+	]).directive('textAngularToolbar', [
 		'$compile', 'textAngularManager', 'taOptions', 'taTools', 'taToolExecuteAction', '$window',
 		function($compile, textAngularManager, taOptions, taTools, taToolExecuteAction, $window){
 			return {
@@ -1726,10 +1750,10 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							toolElement = angular.element(toolDefinition.display);
 						}
 						else toolElement = angular.element("<button type='button'>");
-						
+
 						if(toolDefinition && toolDefinition["class"]) toolElement.addClass(toolDefinition["class"]);
 						else toolElement.addClass(scope.classes.toolbarButton);
-						
+
 						toolElement.attr('name', toolScope.name);
 						// important to not take focus from the main text/html entry
 						toolElement.attr('unselectable', 'on');
@@ -1902,9 +1926,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 		// this service is used to manage all textAngular editors and toolbars.
 		// All publicly published functions that modify/need to access the toolbar or editor scopes should be in here
 		// these contain references to all the editors and toolbars that have been initialised in this app
-		var toolbars = {}, editors = {};
+		var toolbars = {}, editors = {}, events = {};
 		// when we focus into a toolbar, we need to set the TOOLBAR's $parent to be the toolbars it's linked to.
 		// We also need to set the tools to be updated to be the toolbars...
+
+
 		return {
 			// register an editor and the toolbars that it is affected by
 			registerEditor: function(name, scope, targetToolbars){
@@ -1918,6 +1944,14 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					if(toolbars[_name]) _toolbars.push(toolbars[_name]);
 					// if it doesn't exist it may not have been compiled yet and it will be added later
 				});
+				var _subscribe = function(ev) {
+					if (events[name] == null || events[name][ev] == null) {
+						return;
+					}
+					angular.forEach(events[name][ev], function(cb) {
+						cb();
+					});
+				};
 				editors[name] = {
 					scope: scope,
 					toolbars: targetToolbars,
@@ -1929,14 +1963,19 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					editorFunctions: {
 						disable: function(){
 							// disable all linked toolbars
-							angular.forEach(_toolbars, function(toolbarScope){ toolbarScope.disabled = true; });
+							angular.forEach(_toolbars, function(toolbarScope){
+								toolbarScope.disabled = true;
+							});
 						},
 						enable: function(){
 							// enable all linked toolbars
-							angular.forEach(_toolbars, function(toolbarScope){ toolbarScope.disabled = false; });
+							angular.forEach(_toolbars, function(toolbarScope){
+								toolbarScope.disabled = false;
+							});
 						},
 						focus: function(){
 							// this should be called when the editor is focussed
+							_subscribe("focus");
 							angular.forEach(_toolbars, function(toolbarScope){
 								toolbarScope._parent = scope;
 								toolbarScope.disabled = false;
@@ -1945,6 +1984,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						},
 						unfocus: function(){
 							// this should be called when the editor becomes unfocussed
+							_subscribe("focusOut");
 							angular.forEach(_toolbars, function(toolbarScope){
 								toolbarScope.disabled = true;
 								toolbarScope.focussed = false;
@@ -2001,17 +2041,20 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 								){
 									// this should only end up true if the element matches the only attributes
 									onlyWithAttrsFilter = onlyWithAttrsFilter ||
-										(angular.isArray(tool.onElementSelect.onlyWithAttrs) && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs));
+									(angular.isArray(tool.onElementSelect.onlyWithAttrs) && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs));
 									if(!tool.onElementSelect.onlyWithAttrs || elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) unfilteredTools[name] = tool;
 								}
 							});
 							// if we matched attributes to filter on, then filter, else continue
 							if(onlyWithAttrsFilter){
 								angular.forEach(unfilteredTools, function(tool, name){
-									if(tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({'name': name, 'tool': tool});
+									if(tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({
+										'name': name,
+										'tool': tool
+									});
 								});
 								// sort most specific (most attrs to find) first
-								workerTools.sort(function(a,b){
+								workerTools.sort(function(a, b){
 									return b.tool.onElementSelect.onlyWithAttrs.length - a.tool.onElementSelect.onlyWithAttrs.length;
 								});
 							}else{
@@ -2031,7 +2074,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 											break;
 										}
 									}
-									if(result) break; 
+									if(result) break;
 								}
 							}
 							return result;
@@ -2040,7 +2083,16 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 				};
 				return editors[name].editorFunctions;
 			},
-			// retrieve editor by name, largely used by testing suites only
+			registerEvents: function(name, event, cb){
+				var editorEvents, hooks;
+				// targetToolbars are optional, we don't require a toolbar to function
+				if(!name || name === '') throw('textAngular Error: An editor requires a name');
+				editorEvents = events[name] || {};
+				hooks = editorEvents[event] || [];
+				hooks.push(cb);
+				editorEvents[event] = hooks;
+				events[name] = editorEvents;
+			},
 			retrieveEditor: function(name){
 				return editors[name];
 			},
@@ -2180,7 +2232,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					},
 					container: container,
 					collapsed: range.collapsed
-					
+
 				};
 			},
 			getOnlySelectedElements: function(){
@@ -2196,42 +2248,42 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			},
 			setSelection: function(el, start, end){
 				var range = rangy.createRange();
-				
+
 				range.setStart(el, start);
 				range.setEnd(el, end);
-				
+
 				rangy.getSelection().setSingleRange(range);
 			},
 			setSelectionBeforeElement: function (el){
 				var range = rangy.createRange();
-				
+
 				range.selectNode(el);
 				range.collapse(true);
-				
+
 				rangy.getSelection().setSingleRange(range);
 			},
 			setSelectionAfterElement: function (el){
 				var range = rangy.createRange();
-				
+
 				range.selectNode(el);
 				range.collapse(false);
-				
+
 				rangy.getSelection().setSingleRange(range);
 			},
 			setSelectionToElementStart: function (el){
 				var range = rangy.createRange();
-				
+
 				range.selectNodeContents(el);
 				range.collapse(true);
-				
+
 				rangy.getSelection().setSingleRange(range);
 			},
 			setSelectionToElementEnd: function (el){
 				var range = rangy.createRange();
-				
+
 				range.selectNodeContents(el);
 				range.collapse(false);
-				
+
 				rangy.getSelection().setSingleRange(range);
 			},
 			// from http://stackoverflow.com/questions/6690752/insert-html-at-caret-in-a-contenteditable-div
@@ -2281,7 +2333,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							endNodes.push(_document.createTextNode(range.startContainer.nodeValue.substring(range.startOffset)));
 							range.startContainer.nodeValue = range.startContainer.nodeValue.substring(0, range.startOffset);
 							for(i = startIndex + 1; i < nodes.length; i++) endNodes.push(nodes[i]);
-							
+
 							secondParent = parent.cloneNode();
 							parent.childNodes = startNodes;
 							secondParent.childNodes = endNodes;
