@@ -2017,13 +2017,13 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							});
 							return result;
 						},
-						triggerElementSelect: function(event, element) {
+						triggerElementSelect: function(event, element){
 							// search through the taTools to see if a match for the tag is made.
 							// if there is, see if the tool is on a registered toolbar and not disabled.
 							// NOTE: This can trigger on MULTIPLE tools simultaneously.
-							var elementHasAttrs = function (_element, attrs) {
+							var elementHasAttrs = function(_element, attrs){
 								var result = true;
-								for (var i = 0; i < attrs.length; i++) result = result && _element.attr(attrs[i]);
+								for(var i = 0; i < attrs.length; i++) result = result && _element.attr(attrs[i]);
 								return result;
 							};
 							var workerTools = [];
@@ -2032,49 +2032,49 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							element = angular.element(element);
 							// get all valid tools by element name, keep track if one matches the
 							var onlyWithAttrsFilter = false;
-							angular.forEach(taTools, function (tool, name) {
-								if (
+							angular.forEach(taTools, function(tool, name){
+								if(
 									tool.onElementSelect &&
 									tool.onElementSelect.element &&
 									tool.onElementSelect.element.toLowerCase() === element[0].tagName.toLowerCase() &&
 									(!tool.onElementSelect.filter || tool.onElementSelect.filter(element))
-								) {
+								){
 									// this should only end up true if the element matches the only attributes
 									onlyWithAttrsFilter = onlyWithAttrsFilter ||
 									(angular.isArray(tool.onElementSelect.onlyWithAttrs) && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs));
-									if (!tool.onElementSelect.onlyWithAttrs || elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) unfilteredTools[name] = tool;
+									if(!tool.onElementSelect.onlyWithAttrs || elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) unfilteredTools[name] = tool;
 								}
 							});
 							// if we matched attributes to filter on, then filter, else continue
-							if (onlyWithAttrsFilter) {
-								angular.forEach(unfilteredTools, function (tool, name) {
-									if (tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({
+							if(onlyWithAttrsFilter){
+								angular.forEach(unfilteredTools, function(tool, name){
+									if(tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({
 										'name': name,
 										'tool': tool
 									});
 								});
 								// sort most specific (most attrs to find) first
-								workerTools.sort(function (a, b) {
+								workerTools.sort(function(a, b){
 									return b.tool.onElementSelect.onlyWithAttrs.length - a.tool.onElementSelect.onlyWithAttrs.length;
 								});
-							} else {
-								angular.forEach(unfilteredTools, function (tool, name) {
+							}else{
+								angular.forEach(unfilteredTools, function(tool, name){
 									workerTools.push({'name': name, 'tool': tool});
 								});
 							}
 							// Run the actions on the first visible filtered tool only
-							if (workerTools.length > 0) {
-								for (var _i = 0; _i < workerTools.length; _i++) {
+							if(workerTools.length > 0){
+								for(var _i = 0; _i < workerTools.length; _i++){
 									var tool = workerTools[_i].tool;
 									var name = workerTools[_i].name;
-									for (var _t = 0; _t < _toolbars.length; _t++) {
-										if (_toolbars[_t].tools[name] !== undefined) {
+									for(var _t = 0; _t < _toolbars.length; _t++){
+										if(_toolbars[_t].tools[name] !== undefined){
 											tool.onElementSelect.action.call(_toolbars[_t].tools[name], event, element, scope);
 											result = true;
 											break;
 										}
 									}
-									if (result) break;
+									if(result) break;
 								}
 							}
 							return result;
