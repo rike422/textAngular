@@ -1,5 +1,5 @@
 module.exports = function (grunt) {
-	
+
 	// load all grunt tasks
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -8,18 +8,18 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-karma');
 	grunt.loadNpmTasks('grunt-karma-coveralls');
 	grunt.loadNpmTasks('grunt-conventional-changelog');
-	
-	// Default task.
+  grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.registerTask('default', ['uglify', 'test']);
 	grunt.registerTask('test', ['clean', 'jshint', 'karma', 'coverage']);
 	grunt.registerTask('travis-test', ['jshint', 'karma', 'coverage', 'coveralls']);
-	
+
 	var testConfig = function (configFile, customOptions) {
 		var options = { configFile: configFile, keepalive: true };
 		var travisOptions = process.env.TRAVIS && { browsers: ['PhantomJS'], reporters: ['dots','coverage'] };
 		return grunt.util._.extend(options, customOptions, travisOptions);
 	};
-	
+
 	// Project configuration.
 	grunt.initConfig({
 		changelog: {options: {dest: 'changelog.md'}},
@@ -77,6 +77,29 @@ module.exports = function (grunt) {
 					'dist/textAngular.min.js': ['src/textAngularSetup.js','src/textAngular.js'],
 					'dist/textAngular-sanitize.min.js': ['src/textAngular-sanitize.js']
 				}
+			}
+		},
+		cssmin: {
+			compress_css: {
+				files: {
+					'dist/textAngular.min.css': ['src/textAngular.css']
+				}
+			}
+		},
+		watch: {
+			scripts: {
+        files: ['src/*.js', 'src/*.css'],
+        tasks: ['jshint', 'uglify', 'connect'],
+        options: {
+          spawn: false
+        }
+      },
+			options: {
+				livereload: true
+			}
+    },
+		connect: {
+			site: {
 			}
 		}
 	});

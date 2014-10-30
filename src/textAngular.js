@@ -735,6 +735,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					};
 					// start updating on keydown
 					_keydown = function(){
+
 						/* istanbul ignore else: don't run if already running */
 						if(!scope._bUpdateSelectedStyles){
 							scope._bUpdateSelectedStyles = true;
@@ -1691,7 +1692,30 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 			}
 			return safe;
 		};
-	}]).directive('textAngularToolbar', [
+	}]).directive("taHooks", [
+		'textAngularManager',
+		function(textAngularManager){
+			return {
+				restrict: 'EA',
+				scope: {
+					name: '@',
+					focus: '=',
+					focusOut: '='
+				},
+				link: function (scope, element, attrs) {
+					var name = scope.name;
+					var focus = scope.focus;
+					var focusOut = scope.focusOut;
+					if (angular.isFunction(focus)) {
+						textAngularManager.registerEvents(name, "focus", focus);
+					}
+					if (angular.isFunction(focus)){
+						textAngularManager.registerEvents(name, "focusOut", focusOut);
+					}
+				}
+			};
+		}
+	]).directive('textAngularToolbar', [
 		'$compile', 'textAngularManager', 'taOptions', 'taTools', 'taToolExecuteAction', '$window',
 		function($compile, textAngularManager, taOptions, taTools, taToolExecuteAction, $window){
 			return {
@@ -1902,9 +1926,11 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 		// this service is used to manage all textAngular editors and toolbars.
 		// All publicly published functions that modify/need to access the toolbar or editor scopes should be in here
 		// these contain references to all the editors and toolbars that have been initialised in this app
-		var toolbars = {}, editors = {};
+		var toolbars = {}, editors = {}, events = {};
 		// when we focus into a toolbar, we need to set the TOOLBAR's $parent to be the toolbars it's linked to.
 		// We also need to set the tools to be updated to be the toolbars...
+
+
 		return {
 			// register an editor and the toolbars that it is affected by
 			registerEditor: function(name, scope, targetToolbars){
@@ -1918,6 +1944,14 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					if(toolbars[_name]) _toolbars.push(toolbars[_name]);
 					// if it doesn't exist it may not have been compiled yet and it will be added later
 				});
+				var _subscribe = function(ev) {
+					if (events[name] == null || events[name][ev] == null) {
+						return;
+					}
+					angular.forEach(events[name][ev], function(cb) {
+						cb();
+					});
+				};
 				editors[name] = {
 					scope: scope,
 					toolbars: targetToolbars,
@@ -1927,7 +1961,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 					},
 					// this is a suite of functions the editor should use to update all it's linked toolbars
 					editorFunctions: {
-						disable: function(){
+						disable: function() {
 							// disable all linked toolbars
 							angular.forEach(_toolbars, function(toolbarScope){ toolbarScope.disabled = true; });
 						},
@@ -1937,6 +1971,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						},
 						focus: function(){
 							// this should be called when the editor is focussed
+							_subscribe("focus");
 							angular.forEach(_toolbars, function(toolbarScope){
 								toolbarScope._parent = scope;
 								toolbarScope.disabled = false;
@@ -1945,6 +1980,7 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 						},
 						unfocus: function(){
 							// this should be called when the editor becomes unfocussed
+							_subscribe("focusOut");
 							angular.forEach(_toolbars, function(toolbarScope){
 								toolbarScope.disabled = true;
 								toolbarScope.focussed = false;
@@ -1977,13 +2013,13 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							});
 							return result;
 						},
-						triggerElementSelect: function(event, element){
+						triggerElementSelect: function(event, element) {
 							// search through the taTools to see if a match for the tag is made.
 							// if there is, see if the tool is on a registered toolbar and not disabled.
 							// NOTE: This can trigger on MULTIPLE tools simultaneously.
-							var elementHasAttrs = function(_element, attrs){
+							var elementHasAttrs = function (_element, attrs) {
 								var result = true;
-								for(var i = 0; i < attrs.length; i++) result = result && _element.attr(attrs[i]);
+								for (var i = 0; i < attrs.length; i++) result = result && _element.attr(attrs[i]);
 								return result;
 							};
 							var workerTools = [];
@@ -1992,46 +2028,49 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 							element = angular.element(element);
 							// get all valid tools by element name, keep track if one matches the
 							var onlyWithAttrsFilter = false;
-							angular.forEach(taTools, function(tool, name){
-								if(
+							angular.forEach(taTools, function (tool, name) {
+								if (
 									tool.onElementSelect &&
 									tool.onElementSelect.element &&
 									tool.onElementSelect.element.toLowerCase() === element[0].tagName.toLowerCase() &&
 									(!tool.onElementSelect.filter || tool.onElementSelect.filter(element))
-								){
+								) {
 									// this should only end up true if the element matches the only attributes
 									onlyWithAttrsFilter = onlyWithAttrsFilter ||
-										(angular.isArray(tool.onElementSelect.onlyWithAttrs) && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs));
-									if(!tool.onElementSelect.onlyWithAttrs || elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) unfilteredTools[name] = tool;
+									(angular.isArray(tool.onElementSelect.onlyWithAttrs) && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs));
+									if (!tool.onElementSelect.onlyWithAttrs || elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) unfilteredTools[name] = tool;
 								}
 							});
 							// if we matched attributes to filter on, then filter, else continue
-							if(onlyWithAttrsFilter){
-								angular.forEach(unfilteredTools, function(tool, name){
-									if(tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({'name': name, 'tool': tool});
+							if (onlyWithAttrsFilter) {
+								angular.forEach(unfilteredTools, function (tool, name) {
+									if (tool.onElementSelect.onlyWithAttrs && elementHasAttrs(element, tool.onElementSelect.onlyWithAttrs)) workerTools.push({
+										'name': name,
+										'tool': tool
+									});
 								});
 								// sort most specific (most attrs to find) first
-								workerTools.sort(function(a,b){
+								workerTools.sort(function (a, b) {
 									return b.tool.onElementSelect.onlyWithAttrs.length - a.tool.onElementSelect.onlyWithAttrs.length;
 								});
-							}else{
-								angular.forEach(unfilteredTools, function(tool, name){
+							} else {
+								angular.forEach(unfilteredTools, function (tool, name) {
 									workerTools.push({'name': name, 'tool': tool});
 								});
 							}
 							// Run the actions on the first visible filtered tool only
-							if(workerTools.length > 0){
-								for(var _i = 0; _i < workerTools.length; _i++){
+							if (workerTools.length > 0) {
+								for (var _i = 0; _i < workerTools.length; _i++) {
 									var tool = workerTools[_i].tool;
 									var name = workerTools[_i].name;
-									for(var _t = 0; _t < _toolbars.length; _t++){
-										if(_toolbars[_t].tools[name] !== undefined){
+									for (var _t = 0; _t < _toolbars.length; _t++) {
+										if (_toolbars[_t].tools[name] !== undefined) {
 											tool.onElementSelect.action.call(_toolbars[_t].tools[name], event, element, scope);
 											result = true;
 											break;
 										}
 									}
-									if(result) break; 
+									if (result) break;
 								}
 							}
 							return result;
@@ -2040,7 +2079,16 @@ See README.md or https://github.com/fraywing/textAngular/wiki for requirements a
 				};
 				return editors[name].editorFunctions;
 			},
-			// retrieve editor by name, largely used by testing suites only
+			registerEvents: function(name, event, cb) {
+				var editorEvents, hooks;
+				// targetToolbars are optional, we don't require a toolbar to function
+				if (!name || name === '') throw('textAngular Error: An editor requires a name');
+				editorEvents = events[name] || {};
+				hooks = editorEvents[event] || [];
+				hooks.push(cb);
+				editorEvents[event] = hooks;
+				events[name] = editorEvents;
+			},
 			retrieveEditor: function(name){
 				return editors[name];
 			},
