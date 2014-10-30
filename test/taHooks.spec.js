@@ -6,7 +6,7 @@ describe('taHooks', function(){
 	describe('evnent Hooks ', function(){
 
 		var $rootScope, element;
-		beforeEach(inject(function (_$compile_, _$rootScope_, _textAngularManager_) {
+		beforeEach(inject(function(_$compile_, _$rootScope_, _textAngularManager_){
 			$rootScope = _$rootScope_;
 			this.textAngularManager = _textAngularManager_;
 			var scope = $rootScope.$new();
