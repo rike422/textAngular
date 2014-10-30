@@ -8,7 +8,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-karma');
 	grunt.loadNpmTasks('grunt-karma-coveralls');
 	grunt.loadNpmTasks('grunt-conventional-changelog');
-  grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.registerTask('default', ['uglify', 'test']);
 	grunt.registerTask('test', ['clean', 'jshint', 'karma', 'coverage']);
@@ -25,15 +25,15 @@ module.exports = function (grunt) {
 		changelog: {options: {dest: 'changelog.md'}},
 		clean: ["coverage"],
 		coverage: {
-		  options: {
-		  	thresholds: {
-			  'statements': 100,
-			  'branches': 100,
-			  'lines': 100,
-			  'functions': 100
+			options: {
+				thresholds: {
+				'statements': 100,
+				'branches': 100,
+				'lines': 100,
+				'functions': 100
 			},
 			dir: 'coverage'
-		  }
+			}
 		},
 		coveralls: {
 			options: {
@@ -43,16 +43,16 @@ module.exports = function (grunt) {
 			}
 		},
 		karma: {
-		  jquery: {
+			jquery: {
 			options: testConfig('karma-jquery.conf.js')
-		  },
-		  jqlite: {
+			},
+			jqlite: {
 			options: testConfig('karma-jqlite.conf.js')
-		  }
+			}
 		},
 		jshint: {
-		  files: ['src/textAngular.js', 'src/textAngularSetup.js', 'test/*.spec.js', 'test/taBind/*.spec.js'],// don't hint the textAngularSanitize as they will fail
-		  options: {
+			files: ['src/textAngular.js', 'src/textAngularSetup.js', 'test/*.spec.js', 'test/taBind/*.spec.js'],// don't hint the textAngularSanitize as they will fail
+			options: {
 			eqeqeq: true,
 			immed: true,
 			latedef: true,
@@ -62,7 +62,7 @@ module.exports = function (grunt) {
 			boss: true,
 			eqnull: true,
 			globals: {}
-		  }
+			}
 		},
 		uglify: {
 			options: {
@@ -88,16 +88,16 @@ module.exports = function (grunt) {
 		},
 		watch: {
 			scripts: {
-        files: ['src/*.js', 'src/*.css'],
-        tasks: ['jshint', 'uglify', 'connect'],
-        options: {
-          spawn: false
-        }
-      },
+				files: ['src/*.js', 'src/*.css'],
+				tasks: ['jshint', 'uglify', 'connect'],
+				options: {
+					spawn: false
+				}
+			},
 			options: {
 				livereload: true
 			}
-    },
+		},
 		connect: {
 			site: {
 			}
